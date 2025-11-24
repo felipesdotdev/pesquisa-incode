@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #FAF5EE;
+  --color-purple-brand: #A35DE3;
+  --color-purple-dark: #8B3DFF;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out 3s infinite;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+}
+
+body {
+  font-family: var(--font-space);
+  background-color: var(--color-cream);
+  color: #191919;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .right-panel-gradient {
+    background:
+      radial-gradient(circle at 80% 20%, rgba(253, 244, 255, 0.8) 0%, transparent 50%),
+      radial-gradient(circle at 20% 80%, rgba(254, 240, 138, 0.4) 0%, transparent 50%),
+      linear-gradient(to bottom right, #F3E8FF, #FFF7ED);
+  }
+
+  .soft-shadow {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+  }
+}

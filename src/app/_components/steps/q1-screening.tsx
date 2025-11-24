@@ -1,0 +1,89 @@
+'use client'
+
+import { useState } from 'react';
+import { ArrowRight, Briefcase, User, Building2, XCircle } from 'lucide-react';
+
+interface Q1Props {
+    onNext: (answer: string, timeSpent: number) => void;
+}
+
+export function Q1Screening({ onNext }: Q1Props) {
+    const [startTime] = useState(Date.now());
+    const [selected, setSelected] = useState<string | null>(null);
+
+    const handleSelect = (option: string) => {
+        setSelected(option);
+    };
+
+    const handleContinue = () => {
+        if (!selected) return;
+        const endTime = Date.now();
+        const timeSpent = (endTime - startTime) / 1000;
+        onNext(selected, timeSpent);
+    };
+
+    const options = [
+        { id: 'owner', label: 'Sim, sou dono(a) ou sócio(a)', icon: User, letter: 'A' },
+        { id: 'manager', label: 'Sim, sou gerente/coordenador(a)', icon: Briefcase, letter: 'B' },
+        { id: 'employee', label: 'Trabalho em pequeno negócio', icon: Building2, letter: 'C' },
+        { id: 'no', label: 'Não', icon: XCircle, letter: 'D' },
+    ];
+
+    return (
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4">
+            <div className="w-full max-w-3xl mx-auto space-y-8">
+
+                <div className="space-y-3 relative pl-20">
+                    <div className="flex items-center gap-2 absolute left-10 top-0.5">
+                        <span className="text-xl font-normal text-gray-900">1</span>
+                        <ArrowRight className="h-5 w-5 text-gray-900" />
+                    </div>
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                        Você tem ou trabalha em um pequeno negócio?
+                    </h2>
+                    <p className="text-base text-gray-600">Escolha a melhor opção.</p>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pl-20">
+                    {options.map((opt) => (
+                        <button
+                            key={opt.id}
+                            onClick={() => handleSelect(opt.id)}
+                            className={`
+                                group relative flex h-52 w-40 flex-col items-center justify-center 
+                                rounded-2xl border-2 transition-all
+                                ${selected === opt.id
+                                    ? 'border-[#C2A9F9] bg-gradient-to-br from-[#E5DAFB] to-[#F0E8FC] shadow-lg'
+                                    : 'border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] shadow-md hover:border-[#C2A9F9] hover:shadow-lg'
+                                }
+                            `}
+                        >
+                            <span className="absolute left-3 top-3 text-xs font-semibold text-gray-500">
+                                {opt.letter}
+                            </span>
+
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/60 mb-4">
+                                <opt.icon className="h-8 w-8 text-[#B290F7]" />
+                            </div>
+
+                            <span className="px-3 text-center text-sm font-semibold text-gray-800 leading-tight">
+                                {opt.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex justify-start pt-4 pl-20">
+                    <button
+                        onClick={handleContinue}
+                        disabled={!selected}
+                        className="flex text-xl px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+                    >
+                        OK
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    );
+}
