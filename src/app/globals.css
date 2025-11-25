@@ -6,6 +6,7 @@
   --color-cream: #FAF5EE;
   --color-purple-brand: #A35DE3;
   --color-purple-dark: #8B3DFF;
+  --color-primary: #A35DE3;
 
   --animate-float: float 6s ease-in-out infinite;
   --animate-float-delayed: float 6s ease-in-out 3s infinite;
@@ -23,13 +24,31 @@
   }
 }
 
+/* AQUI A MÁGICA DO BACKGROUND */
+/* Usamos !important para garantir que nada do shadcn/ui cubra o fundo */
 body {
   font-family: var(--font-space);
-  background-color: var(--color-cream);
   color: #191919;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+
+  /* Fundo Lilás Base */
+  background-color: #E7DAEE !important;
+
+  /* Gradiente Idêntico à Imagem */
+  background-image:
+    radial-gradient(at 50% 0%, hsla(24, 38%, 81%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(281, 52%, 75%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(276, 51%, 85%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(276, 48%, 88%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(276, 48%, 92%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(276, 50%, 91%, 1) 0px, transparent 50%) !important;
+
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh;
 }
 
 @layer utilities {

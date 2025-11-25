@@ -1,112 +1,101 @@
-// src/app/_components/steps/q2-segment.tsx
 'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import { ArrowRight, Stethoscope, Scissors, ShoppingCart, Briefcase, Truck, Megaphone, Utensils, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowRight, Building2, Briefcase, User, XCircle } from 'lucide-react';
 
 interface Q2Props {
-    onNext: (segment: string, otherDetails: string | null, timeSpent: number) => void;
+    onNext: (answer: string, timeSpent: number) => void;
 }
 
 export function Q2Segment({ onNext }: Q2Props) {
     const [startTime] = useState(Date.now());
-    const [selectedOther, setSelectedOther] = useState(false);
-    const [otherText, setOtherText] = useState('');
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [selected, setSelected] = useState<string | null>(null);
 
-    // Foca no input se "Outro" for selecionado
-    useEffect(() => {
-        if (selectedOther && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [selectedOther]);
-
-    const handleSelect = (optionId: string) => {
-        if (optionId === 'other') {
-            setSelectedOther(true);
-            return;
-        }
-        submit(optionId, null);
+    const handleSelect = (option: string) => {
+        setSelected(option);
     };
 
-    const handleOtherSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (otherText.trim()) {
-            submit('other', otherText);
-        }
-    };
-
-    const submit = (segment: string, other: string | null) => {
+    const handleContinue = () => {
+        if (!selected) return;
         const endTime = Date.now();
         const timeSpent = (endTime - startTime) / 1000;
-        onNext(segment, other, timeSpent);
+        onNext(selected, timeSpent);
     };
 
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && selected) {
+                const endTime = Date.now();
+                const timeSpent = (endTime - startTime) / 1000;
+                onNext(selected, timeSpent);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [selected, onNext, startTime]);
+
     const options = [
-        { id: 'health', label: 'Saúde', desc: 'Clínicas, consultórios, psicólogos', icon: Stethoscope },
-        { id: 'beauty', label: 'Beleza', desc: 'Salões, estéticas, barbearias', icon: Scissors },
-        { id: 'retail', label: 'Comércio/Varejo', desc: 'Lojas físicas ou online', icon: ShoppingCart },
-        { id: 'services', label: 'Serviços', desc: 'Consultoria, advocacia, contabilidade', icon: Briefcase },
-        { id: 'logistics', label: 'Logística', desc: 'Entregas, transporte', icon: Truck },
-        { id: 'marketing', label: 'Marketing', desc: 'Agências, freelancers', icon: Megaphone },
-        { id: 'food', label: 'Alimentação', desc: 'Restaurantes, cafés, delivery', icon: Utensils },
-        { id: 'other', label: 'Outro', desc: 'Qualquer outro segmento', icon: Plus },
+        { id: 'service', label: 'Prestadora de serviço', icon: User, letter: 'A' },
+        { id: 'store', label: 'Comércio/Loja física', icon: Briefcase, letter: 'B' },
+        { id: 'restaurant', label: 'Restaurante/Lanchonete', icon: Building2, letter: 'C' },
+        { id: 'other', label: 'Outro', icon: XCircle, letter: 'D' },
     ];
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-2xl space-y-8">
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
-                <div className="space-y-2 text-center">
-                    <span className="text-sm font-medium text-primary uppercase tracking-wider">Pergunta 2 de 12</span>
-                    <h2 className="text-3xl font-bold text-gray-900">Qual o segmento do seu negócio?</h2>
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">2</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                        Qual o segmento da sua empresa?
+                    </h2>
+                    <p className="text-sm md:text-base text-gray-600">Escolha a opção que melhor representa.</p>
                 </div>
 
-                {!selectedOther ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {options.map((opt) => (
-                            <button
-                                key={opt.id}
-                                onClick={() => handleSelect(opt.id)}
-                                className="group flex flex-col items-start justify-start rounded-xl border-2 border-gray-100 bg-white p-5 text-left transition-all hover:border-primary hover:shadow-lg active:scale-95"
-                            >
-                                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-500 transition-colors group-hover:bg-purple-50 group-hover:text-primary">
-                                    <opt.icon className="h-5 w-5" />
-                                </div>
-                                <span className="text-lg font-semibold text-gray-900">{opt.label}</span>
-                                <span className="text-sm text-gray-500">{opt.desc}</span>
-                            </button>
-                        ))}
-                    </div>
-                ) : (
-                    <form onSubmit={handleOtherSubmit} className="space-y-4">
-                        <div className="relative">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={otherText}
-                                onChange={(e) => setOtherText(e.target.value)}
-                                placeholder="Digite qual é o seu segmento..."
-                                className="w-full rounded-xl border-2 border-primary p-6 text-lg shadow-lg outline-none placeholder:text-gray-400"
-                                autoFocus
-                            />
-                            <button
-                                type="submit"
-                                disabled={!otherText.trim()}
-                                className="absolute right-3 top-3 bottom-3 rounded-lg bg-primary px-6 font-medium text-white transition-opacity hover:bg-primary-hover disabled:opacity-50"
-                            >
-                                Continuar
-                            </button>
-                        </div>
+                <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:gap-4 pl-8 md:pl-20">
+                    {options.map((opt) => (
                         <button
-                            type="button"
-                            onClick={() => setSelectedOther(false)}
-                            className="text-sm text-gray-500 hover:underline w-full text-center"
+                            key={opt.id}
+                            onClick={() => handleSelect(opt.id)}
+                            className={`
+                                group relative flex flex-col items-center justify-center 
+                                h-40 md:h-52 md:w-40
+                                rounded-2xl border-2 transition-all
+                                ${selected === opt.id
+                                    ? 'border-[#C2A9F9] bg-gradient-to-br from-[#E5DAFB] to-[#F0E8FC] shadow-lg'
+                                    : 'border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] shadow-md hover:border-[#C2A9F9] hover:shadow-lg'
+                                }
+                            `}
                         >
-                            Voltar para opções
+                            <span className="absolute left-2 md:left-3 top-2 md:top-3 text-xs font-semibold text-gray-500">
+                                {opt.letter}
+                            </span>
+
+                            <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-full bg-white/60 mb-3 md:mb-4">
+                                <opt.icon className="h-6 w-6 md:h-8 md:w-8 text-[#B290F7]" />
+                            </div>
+
+                            <span className="px-2 md:px-3 text-center text-xs md:text-sm font-semibold text-gray-800 leading-tight break-words w-full">
+                                {opt.label}
+                            </span>
                         </button>
-                    </form>
-                )}
+                    ))}
+                </div>
+
+                <div className="flex justify-start pt-2 md:pt-4 pl-8 md:pl-20">
+                    <button
+                        onClick={handleContinue}
+                        disabled={!selected}
+                        className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+                    >
+                        OK
+                    </button>
+                </div>
 
             </div>
         </div>

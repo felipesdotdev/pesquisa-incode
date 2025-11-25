@@ -1,4 +1,3 @@
-// src/app/_components/steps/q10-magic-wand.tsx
 'use client'
 
 import { useState } from 'react';
@@ -19,34 +18,42 @@ export function Q10MagicWand({ onNext }: Q10Props) {
     };
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-lg space-y-8">
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
-                <div className="space-y-2 text-center">
-                    <span className="text-sm font-medium text-primary uppercase tracking-wider">Pergunta 10 de 12</span>
-                    <div className="flex justify-center py-2">
-                        <Sparkles className="h-12 w-12 text-yellow-400 animate-pulse" />
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">10</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900">
-                        Se você tivesse uma 'varinha mágica' para automatizar UMA tarefa chata do seu dia, qual seria?
-                    </h2>
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                            Se você tivesse uma 'varinha mágica' para automatizar UMA tarefa chata do seu dia, qual seria?
+                        </h2>
+                        <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-yellow-400 animate-pulse flex-shrink-0" />
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="pl-8 md:pl-20 space-y-4">
                     <textarea
                         value={text}
                         onChange={(e) => setText(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                                e.preventDefault();
+                                handleSubmit(e as any);
+                            }
+                        }}
                         placeholder="Ex: Confirmar agendamentos no WhatsApp automaticamente..."
-                        className="w-full min-h-[150px] rounded-xl border-2 border-gray-200 p-5 text-lg shadow-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                        className="w-full min-h-[150px] md:min-h-[180px] rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-5 text-sm md:text-base shadow-md outline-none transition-all focus:border-[#C2A9F9] focus:ring-2 focus:ring-[#C2A9F9]/20 resize-none placeholder:text-gray-400"
                         autoFocus
                     />
 
                     <button
                         type="submit"
-                        className="group flex w-full items-center justify-center rounded-xl bg-primary py-4 text-lg font-bold text-white transition-all hover:bg-primary-hover hover:shadow-lg disabled:opacity-50"
+                        className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg active:scale-[0.98]"
                     >
-                        {text.length > 0 ? 'Continuar' : 'Pular (Não tenho ideias)'}
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        {text.length > 0 ? 'OK' : 'Pular'}
                     </button>
                 </form>
 

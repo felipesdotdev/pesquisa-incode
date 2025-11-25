@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Briefcase, User, Building2, XCircle } from 'lucide-react';
 
 interface Q1Props {
@@ -21,6 +21,19 @@ export function Q1Screening({ onNext }: Q1Props) {
         const timeSpent = (endTime - startTime) / 1000;
         onNext(selected, timeSpent);
     };
+
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && selected) {
+                const endTime = Date.now();
+                const timeSpent = (endTime - startTime) / 1000;
+                onNext(selected, timeSpent);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [selected, onNext, startTime]);
 
     const options = [
         { id: 'owner', label: 'Sim, sou dono(a) ou sócio(a)', icon: User, letter: 'A' },
@@ -50,7 +63,7 @@ export function Q1Screening({ onNext }: Q1Props) {
                             key={opt.id}
                             onClick={() => handleSelect(opt.id)}
                             className={`
-                                group relative flex h-52 w-40 flex-col items-center justify-center 
+                                group relative flex h-56 w-40 flex-col items-center justify-center 
                                 rounded-2xl border-2 transition-all
                                 ${selected === opt.id
                                     ? 'border-[#C2A9F9] bg-gradient-to-br from-[#E5DAFB] to-[#F0E8FC] shadow-lg'
@@ -66,7 +79,7 @@ export function Q1Screening({ onNext }: Q1Props) {
                                 <opt.icon className="h-8 w-8 text-[#B290F7]" />
                             </div>
 
-                            <span className="px-3 text-center text-sm font-semibold text-gray-800 leading-tight">
+                            <span className="px-3 text-center text-xs font-semibold text-gray-800 leading-tight break-words w-full">
                                 {opt.label}
                             </span>
                         </button>

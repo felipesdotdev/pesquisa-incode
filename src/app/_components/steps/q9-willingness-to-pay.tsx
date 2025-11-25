@@ -1,7 +1,7 @@
-// src/app/_components/steps/q9-willingness-to-pay.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 
 interface Q9Props {
     onNext: (value: string, timeSpent: number) => void;
@@ -9,49 +9,62 @@ interface Q9Props {
 
 export function Q9WillingnessToPay({ onNext }: Q9Props) {
     const [startTime] = useState(Date.now());
+    const [selected, setSelected] = useState<string | null>(null);
 
     const handleSelect = (value: string) => {
+        setSelected(value);
         const endTime = Date.now();
         onNext(value, (endTime - startTime) / 1000);
     };
 
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && selected) {
+                const endTime = Date.now();
+                onNext(selected, (endTime - startTime) / 1000);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [selected, onNext, startTime]);
+
     const options = [
-        { id: 'free', label: 'R$0 (só usaria se fosse grátis)', highlight: false },
-        { id: 'low', label: 'Até R$30/mês', highlight: true },
-        { id: 'medium_low', label: 'R$30-50/mês', highlight: true },
-        { id: 'medium', label: 'R$50-100/mês', highlight: true },
-        { id: 'high', label: 'R$100-150/mês', highlight: true },
-        { id: 'premium', label: 'Mais de R$150/mês', highlight: true },
+        { id: 'free', label: 'Prefiro usar versões gratuitas' },
+        { id: 'low', label: 'Até R$49/mês' },
+        { id: 'medium', label: 'R$50 - R$99/mês' },
+        { id: 'high', label: 'R$100 - R$199/mês' },
+        { id: 'premium', label: 'R$200+/mês' },
     ];
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-lg space-y-8">
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
-                <div className="space-y-2 text-center">
-                    <span className="text-sm font-medium text-primary uppercase tracking-wider">Pergunta 9 de 12</span>
-                    <h2 className="text-3xl font-bold text-gray-900">E quanto você estaria DISPOSTO A PAGAR?</h2>
-                    <p className="text-gray-500">Seja sincero, não vamos te cobrar nada agora.</p>
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">9</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                        E quanto você estaria disposto a investir mensalmente para resolver esses problemas?
+                    </h2>
+                    <p className="text-sm md:text-base text-gray-600">
+                        (Se a ferramenta funcionasse perfeitamente)
+                    </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="pl-8 md:pl-20 space-y-3">
                     {options.map((opt) => (
                         <button
                             key={opt.id}
                             onClick={() => handleSelect(opt.id)}
-                            className={`group flex w-full items-center justify-between rounded-xl border-2 p-5 text-left transition-all active:scale-[0.98] ${opt.highlight
-                                    ? 'border-gray-100 bg-white hover:border-green-500 hover:shadow-md'
-                                    : 'border-gray-100 bg-gray-50 hover:bg-gray-100'
-                                }`}
+                            className="group flex w-full items-center justify-between rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] p-4 md:p-5 text-left transition-all shadow-md hover:border-[#C2A9F9] hover:shadow-lg active:scale-[0.98]"
                         >
-                            <span className={`text-lg font-medium ${opt.highlight ? 'text-gray-900' : 'text-gray-600'}`}>
+                            <span className="text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900">
                                 {opt.label}
                             </span>
-                            {opt.highlight && (
-                                <span className="text-sm font-bold text-green-600 opacity-0 transition-opacity group-hover:opacity-100">
-                                    Investir
-                                </span>
-                            )}
+                            <div className="h-5 w-5 flex-shrink-0 rounded-full border-2 border-gray-300 group-hover:border-[#C2A9F9] group-hover:bg-[#C2A9F9] transition-all" />
                         </button>
                     ))}
                 </div>

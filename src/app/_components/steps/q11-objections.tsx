@@ -1,50 +1,75 @@
-// src/app/_components/steps/q11-objections.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 
 interface Q11Props {
-    onNext: (text: string, timeSpent: number) => void;
+    onNext: (objection: string, timeSpent: number) => void;
 }
 
 export function Q11Objections({ onNext }: Q11Props) {
     const [startTime] = useState(Date.now());
-    const [text, setText] = useState('');
+    const [selected, setSelected] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSelect = (objection: string) => {
+        setSelected(objection);
         const endTime = Date.now();
-        onNext(text, (endTime - startTime) / 1000);
+        onNext(objection, (endTime - startTime) / 1000);
     };
 
-    return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-lg space-y-8">
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && selected) {
+                const endTime = Date.now();
+                onNext(selected, (endTime - startTime) / 1000);
+            }
+        };
 
-                <div className="space-y-2 text-center">
-                    <span className="text-sm font-medium text-red-500 uppercase tracking-wider">Feedback Importante</span>
-                    <h2 className="text-3xl font-bold text-gray-900">O que te faria NÃO usar uma solução assim?</h2>
-                    <p className="text-gray-500">Sua sinceridade nos ajuda a não criar algo inútil.</p>
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [selected, onNext, startTime]);
+
+    const options = [
+        { id: 'trust', label: 'Não confio em IA fazendo isso por mim' },
+        { id: 'cost', label: 'Acho que seria muito caro' },
+        { id: 'complexity', label: 'Parece complicado de usar' },
+        { id: 'time', label: 'Não tenho tempo para aprender' },
+        { id: 'none', label: 'Nenhuma objeção, gostei da ideia!' },
+    ];
+
+    return (
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
+
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">11</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                        Qual seria sua MAIOR objeção para usar uma ferramenta assim?
+                    </h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <textarea
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="Ex: Tenho medo de erros, acho caro, não entendo tecnologia..."
-                        className="w-full min-h-[150px] rounded-xl border-2 border-red-100 p-5 text-lg shadow-sm outline-none transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 resize-none bg-red-50/30"
-                        autoFocus
-                    />
-
-                    <button
-                        type="submit"
-                        className="group flex w-full items-center justify-center rounded-xl bg-gray-900 py-4 text-lg font-bold text-white transition-all hover:bg-gray-800 hover:shadow-lg"
-                    >
-                        {text.length > 0 ? 'Enviar Feedback' : 'Prefiro não dizer'}
-                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </button>
-                </form>
+                <div className="pl-8 md:pl-20 space-y-3">
+                    {options.map((opt) => (
+                        <button
+                            key={opt.id}
+                            onClick={() => handleSelect(opt.id)}
+                            className={`group flex w-full items-center justify-between rounded-2xl border-2 p-4 md:p-5 text-left transition-all shadow-md hover:shadow-lg active:scale-[0.98] ${opt.id === 'none'
+                                ? 'border-green-300 bg-gradient-to-br from-green-50 to-green-100 hover:border-green-500'
+                                : 'border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] hover:border-[#C2A9F9]'
+                                }`}
+                        >
+                            <span className={`text-sm md:text-base font-semibold ${opt.id === 'none' ? 'text-green-800' : 'text-gray-800'}`}>
+                                {opt.label}
+                            </span>
+                            {opt.id === 'none' && (
+                                <span className="text-xl">✨</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
 
             </div>
         </div>

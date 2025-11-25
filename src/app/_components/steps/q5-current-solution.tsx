@@ -1,4 +1,3 @@
-// src/app/_components/steps/q5-current-solution.tsx
 'use client'
 
 import { useState, useRef, useEffect } from 'react';
@@ -45,34 +44,39 @@ export function Q5CurrentSolution({ onNext }: Q5Props) {
     ];
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-lg space-y-8">
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
-                <div className="space-y-2 text-center">
-                    <span className="text-sm font-medium text-primary uppercase tracking-wider">Pergunta 5 de 12</span>
-                    <h2 className="text-3xl font-bold text-gray-900">Como você resolve isso hoje?</h2>
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">5</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                        Como você resolve isso hoje?
+                    </h2>
                 </div>
 
                 {!showInput ? (
-                    <div className="space-y-3">
+                    <div className="pl-8 md:pl-20 space-y-3">
                         {options.map((opt) => (
                             <button
                                 key={opt.id}
                                 onClick={() => handleSelect(opt.id)}
-                                className="group flex w-full items-center gap-4 rounded-xl border-2 border-gray-100 bg-white p-5 text-left transition-all hover:border-primary hover:shadow-md"
+                                className="group flex w-full items-center gap-3 md:gap-4 rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] p-4 md:p-5 text-left transition-all shadow-md hover:border-[#C2A9F9] hover:shadow-lg active:scale-[0.98]"
                             >
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-500 transition-colors group-hover:bg-purple-50 group-hover:text-primary">
-                                    <opt.icon className="h-5 w-5" />
+                                <div className="flex h-10 w-10 md:h-12 md:w-12 flex-shrink-0 items-center justify-center rounded-full bg-white/60 text-[#B290F7] transition-colors group-hover:bg-white">
+                                    <opt.icon className="h-5 w-5 md:h-6 md:w-6" />
                                 </div>
-                                <span className="text-lg font-medium text-gray-700 group-hover:text-gray-900">
+                                <span className="text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900">
                                     {opt.label}
                                 </span>
                             </button>
                         ))}
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        <div className="bg-blue-50 p-4 rounded-lg text-blue-800 text-sm border border-blue-100">
+                    <div className="pl-8 md:pl-20 space-y-6">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-2xl text-blue-800 text-sm md:text-base border-2 border-blue-200 shadow-sm">
                             Legal! Saber qual ferramenta você usa nos ajuda a entender o que podemos melhorar.
                         </div>
 
@@ -83,22 +87,24 @@ export function Q5CurrentSolution({ onNext }: Q5Props) {
                                 value={toolName}
                                 onChange={(e) => setToolName(e.target.value)}
                                 placeholder="Qual ferramenta? (Ex: Trello, RD Station...)"
-                                className="w-full rounded-xl border-2 border-primary p-5 text-lg shadow-lg outline-none"
+                                className="w-full rounded-2xl border-2 border-[#C2A9F9] bg-white p-4 md:p-5 text-sm md:text-base shadow-md outline-none focus:ring-2 focus:ring-[#C2A9F9]/20 placeholder:text-gray-400"
                             />
-                            <button
-                                type="submit"
-                                disabled={!toolName.trim()}
-                                className="flex w-full items-center justify-center rounded-xl bg-primary py-4 font-bold text-white hover:bg-primary-hover disabled:opacity-50"
-                            >
-                                Continuar <ArrowRight className="ml-2 h-5 w-5" />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowInput(false)}
-                                className="w-full text-center text-sm text-gray-500 hover:underline"
-                            >
-                                Voltar
-                            </button>
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    type="submit"
+                                    disabled={!toolName.trim()}
+                                    className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+                                >
+                                    OK
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowInput(false)}
+                                    className="w-full text-center text-sm text-gray-500 hover:text-gray-700 hover:underline"
+                                >
+                                    Voltar
+                                </button>
+                            </div>
                         </form>
                     </div>
                 )}

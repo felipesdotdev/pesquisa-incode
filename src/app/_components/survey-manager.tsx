@@ -17,16 +17,41 @@ import { Q10MagicWand } from './steps/q10-magic-wand';
 import { Q11Objections } from './steps/q11-objections';
 import { Q12LeadCapture } from './steps/q12-lead-capture';
 import { ThankYou } from './steps/thank-you';
+import { XCircle } from 'lucide-react';
 
 function Disqualified() {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center animate-in fade-in">
-            <div className="mb-6 h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl">🛑</div>
-            <h1 className="text-2xl font-bold text-gray-900">Obrigado pelo interesse!</h1>
-            <p className="mt-4 max-w-md text-gray-600">
-                No momento, esta pesquisa é exclusiva para donos e gestores de pequenos negócios que buscam automação.
-            </p>
-            <p className="mt-2 text-sm text-gray-400">Agradecemos seu tempo.</p>
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-2xl mx-auto text-center space-y-6 animate-in fade-in duration-700">
+
+                {/* Ícone principal */}
+                <div className="flex justify-center mb-8">
+                    <div className="flex h-24 w-24 md:h-32 md:w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#FFE5E5] to-[#FFD0D0] shadow-lg">
+                        <XCircle className="h-12 w-12 md:h-16 md:w-16 text-[#FF6B6B]" strokeWidth={2} />
+                    </div>
+                </div>
+
+                {/* Título */}
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
+                    Obrigado pelo interesse!
+                </h1>
+
+                {/* Texto principal */}
+                <p className="text-base md:text-lg text-gray-700 max-w-lg mx-auto leading-relaxed">
+                    No momento, esta pesquisa é exclusiva para <span className="font-semibold text-gray-900">donos e gestores de pequenos negócios</span> que buscam automação.
+                </p>
+
+                {/* Texto secundário */}
+                <p className="text-sm md:text-base text-gray-500 pt-4">
+                    Agradecemos muito seu tempo e interesse! 💜
+                </p>
+
+                {/* Marca d'água */}
+                <div className="pt-12 text-xs text-gray-400">
+                    Pesquisa Incode © 2025
+                </div>
+
+            </div>
         </div>
     );
 }
@@ -86,8 +111,8 @@ export function SurveyManager() {
     };
 
     // Q2 -> Q3
-    const handleQ2Next = async (segment: string, other: string | null, time: number) => {
-        await saveStep('q2_segment', { businessSegment: segment, businessSegmentOther: other || undefined }, time);
+    const handleQ2Next = async (segment: string, time: number) => {
+        await saveStep('q2_segment', { businessSegment: segment }, time);
         setStep('q3');
     };
 

@@ -1,4 +1,3 @@
-// src/app/_components/steps/q12-lead-capture.tsx
 'use client'
 
 import { useState } from 'react';
@@ -22,78 +21,104 @@ export function Q12LeadCapture({ onFinish }: Q12Props) {
 
     if (wantsToJoin === null) {
         return (
-            <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="w-full max-w-lg space-y-8 text-center">
-                    <h2 className="text-4xl font-bold text-gray-900">🎉 Quer testar o Incode GRÁTIS quando lançarmos?</h2>
-                    <p className="text-lg text-gray-600">O beta está previsto para Dezembro de 2025.</p>
+            <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+                <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
-                    <div className="flex flex-col gap-3">
+                    <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                        <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                            <span className="text-lg md:text-xl font-normal text-gray-900">12</span>
+                            <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+                        </div>
+                        <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                            🎉 Quer testar o Incode GRÁTIS quando lançarmos?
+                        </h2>
+                        <p className="text-sm md:text-base text-gray-600">
+                            O beta está previsto para Dezembro de 2025.
+                        </p>
+                    </div>
+
+                    <div className="pl-8 md:pl-20 flex flex-col gap-3">
                         <button
                             onClick={() => setWantsToJoin(true)}
-                            className="w-full rounded-xl bg-primary py-4 text-lg font-bold text-white shadow-lg hover:bg-primary-hover hover:scale-105 transition-all"
+                            className="w-full rounded-2xl bg-[#C2A9F9] py-4 md:py-5 text-base md:text-lg font-bold text-white shadow-lg hover:bg-[#B290F7] hover:scale-[1.02] transition-all"
                         >
                             Sim! Me avise do lançamento 🚀
                         </button>
                         <button
                             onClick={() => onFinish(null, null, 0)}
-                            className="w-full rounded-xl bg-gray-100 py-4 text-gray-500 hover:bg-gray-200 transition-all"
+                            className="w-full rounded-2xl bg-gray-200 py-4 md:py-5 text-sm md:text-base font-semibold text-gray-600 hover:bg-gray-300 transition-all"
                         >
                             Não, obrigado. Apenas finalize.
                         </button>
                     </div>
+
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-md space-y-8">
-                <div className="text-center space-y-2">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 mb-4">
-                        <CheckCircle className="h-8 w-8" />
+        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
+
+                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+                        <span className="text-lg md:text-xl font-normal text-gray-900">12</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900">Excelente!</h2>
-                    <p className="text-gray-500">Onde devemos te avisar?</p>
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-green-100 flex-shrink-0">
+                            <CheckCircle className="h-6 w-6 md:h-7 md:w-7 text-green-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Excelente!</h2>
+                            <p className="text-sm md:text-base text-gray-600">Onde devemos te avisar?</p>
+                        </div>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="pl-8 md:pl-20 space-y-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 ml-1">Seu melhor e-mail</label>
-                        <div className="relative">
-                            <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+                        <div className="relative group">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#C2A9F9] transition-colors">
+                                <Mail className="h-5 w-5" />
+                            </div>
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="nome@empresa.com"
-                                className="w-full rounded-xl border-2 border-gray-200 pl-12 p-3 text-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                className="w-full rounded-2xl border-2 border-gray-200 pl-12 pr-4 py-4 text-base outline-none transition-all focus:border-[#C2A9F9] focus:ring-4 focus:ring-[#C2A9F9]/10 shadow-sm placeholder:text-gray-400"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 ml-1">WhatsApp (Opcional)</label>
-                        <div className="relative">
-                            <Phone className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+                        <div className="relative group">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#C2A9F9] transition-colors">
+                                <Phone className="h-5 w-5" />
+                            </div>
                             <input
                                 type="tel"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="(11) 99999-9999"
-                                className="w-full rounded-xl border-2 border-gray-200 pl-12 p-3 text-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                className="w-full rounded-2xl border-2 border-gray-200 pl-12 pr-4 py-4 text-base outline-none transition-all focus:border-[#C2A9F9] focus:ring-4 focus:ring-[#C2A9F9]/10 shadow-sm placeholder:text-gray-400"
                             />
                         </div>
                     </div>
 
                     <button
                         type="submit"
-                        className="mt-6 w-full rounded-xl bg-black py-4 text-lg font-bold text-white shadow-lg hover:bg-gray-800 hover:scale-[1.02] transition-all"
+                        className="mt-6 flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg active:scale-[0.98]"
                     >
-                        Finalizar Cadastro
+                        OK
                     </button>
                 </form>
+
             </div>
         </div>
     );
