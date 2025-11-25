@@ -10,6 +10,23 @@ interface Q4Props {
 export function Q4PainIntensity({ onNext }: Q4Props) {
     const [startTime] = useState(Date.now());
     const [selected, setSelected] = useState<number | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const handleSelect = (num: number) => {
+        setSelected(num);
+        // Auto-advance on mobile
+        if (isMobile) {
+            const endTime = Date.now();
+            onNext(num, (endTime - startTime) / 1000);
+        }
+    };
 
     const handleNext = () => {
         if (selected === null) return;
@@ -54,7 +71,7 @@ export function Q4PainIntensity({ onNext }: Q4Props) {
                         {numbers.map((num) => (
                             <button
                                 key={num}
-                                onClick={() => setSelected(num)}
+                                onClick={() => handleSelect(num)}
                                 className={`
                                     flex h-9 w-9 sm:h-11 sm:w-11 md:h-14 md:w-14 items-center justify-center 
                                     rounded-full border-2 font-semibold text-xs sm:text-sm md:text-lg
@@ -77,11 +94,12 @@ export function Q4PainIntensity({ onNext }: Q4Props) {
                     </div>
                 </div>
 
-                <div className="flex justify-start pt-2 md:pt-4 pl-8 md:pl-20">
+                {/* OK button - only visible on desktop */}
+                <div className="hidden md:flex justify-start pt-4 pl-20">
                     <button
                         onClick={handleNext}
                         disabled={selected === null}
-                        className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+                        className="flex text-xl px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
                     >
                         OK
                     </button>

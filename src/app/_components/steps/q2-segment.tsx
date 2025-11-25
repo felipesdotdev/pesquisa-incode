@@ -10,9 +10,23 @@ interface Q2Props {
 export function Q2Segment({ onNext }: Q2Props) {
     const [startTime] = useState(Date.now());
     const [selected, setSelected] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleSelect = (option: string) => {
         setSelected(option);
+        // Auto-advance on mobile
+        if (isMobile) {
+            const endTime = Date.now();
+            const timeSpent = (endTime - startTime) / 1000;
+            onNext(option, timeSpent);
+        }
     };
 
     const handleContinue = () => {
@@ -57,14 +71,32 @@ export function Q2Segment({ onNext }: Q2Props) {
                     <p className="text-sm md:text-base text-gray-600">Escolha a opção que melhor representa.</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:gap-4 pl-8 md:pl-20">
+                {/* Mobile: Vertical list layout */}
+                <div className="md:hidden pl-8 space-y-3">
+                    {options.map((opt) => (
+                        <button
+                            key={opt.id}
+                            onClick={() => handleSelect(opt.id)}
+                            className="group flex w-full items-center gap-3 rounded-2xl border-2 border-gray-200 bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] p-4 text-left transition-all shadow-md hover:border-[#C2A9F9] hover:shadow-lg active:scale-[0.98]"
+                        >
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/60 text-[#B290F7] transition-colors group-hover:bg-white">
+                                <opt.icon className="h-5 w-5" />
+                            </div>
+                            <span className="text-sm font-semibold text-gray-800 group-hover:text-gray-900">
+                                {opt.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Desktop: Card layout */}
+                <div className="hidden md:flex flex-wrap gap-4 pl-20">
                     {options.map((opt) => (
                         <button
                             key={opt.id}
                             onClick={() => handleSelect(opt.id)}
                             className={`
-                                group relative flex flex-col items-center justify-center 
-                                h-40 md:h-52 md:w-40
+                                group relative flex h-52 w-40 flex-col items-center justify-center 
                                 rounded-2xl border-2 transition-all
                                 ${selected === opt.id
                                     ? 'border-[#C2A9F9] bg-gradient-to-br from-[#E5DAFB] to-[#F0E8FC] shadow-lg'
@@ -72,26 +104,27 @@ export function Q2Segment({ onNext }: Q2Props) {
                                 }
                             `}
                         >
-                            <span className="absolute left-2 md:left-3 top-2 md:top-3 text-xs font-semibold text-gray-500">
+                            <span className="absolute left-3 top-3 text-xs font-semibold text-gray-500">
                                 {opt.letter}
                             </span>
 
-                            <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-full bg-white/60 mb-3 md:mb-4">
-                                <opt.icon className="h-6 w-6 md:h-8 md:w-8 text-[#B290F7]" />
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/60 mb-4">
+                                <opt.icon className="h-8 w-8 text-[#B290F7]" />
                             </div>
 
-                            <span className="px-2 md:px-3 text-center text-xs md:text-sm font-semibold text-gray-800 leading-tight break-words w-full">
+                            <span className="px-3 text-center text-sm font-semibold text-gray-800 leading-tight break-words w-full">
                                 {opt.label}
                             </span>
                         </button>
                     ))}
                 </div>
 
-                <div className="flex justify-start pt-2 md:pt-4 pl-8 md:pl-20">
+                {/* OK button - only visible on desktop */}
+                <div className="hidden md:flex justify-start pt-4 pl-20">
                     <button
                         onClick={handleContinue}
                         disabled={!selected}
-                        className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+                        className="flex text-xl px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
                     >
                         OK
                     </button>
