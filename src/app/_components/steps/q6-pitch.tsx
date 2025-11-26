@@ -49,7 +49,7 @@ export function Q6Pitch({ onNext }: Q6Props) {
     const statusColor = isDarkMode ? 'text-white' : 'text-black';
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8 overflow-hidden">
+        <div className="flex min-h-screen w-full items-center justify-center px-4 py-8 overflow-hidden">
             <style jsx global>{`
                 @keyframes float {
                     0%, 100% { transform: translateY(0px); }

@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 
 export function ThankYou() {
     return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+        <div className="flex min-h-screen w-full items-center justify-center px-4 py-8">
             <div className="w-full max-w-2xl mx-auto text-center space-y-6 md:space-y-8 animate-in fade-in duration-1000">
 
                 {/* Ícone principal */}

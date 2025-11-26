@@ -49,7 +49,7 @@ export function Q4PainIntensity({ onNext }: Q4Props) {
     const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+        <div className="flex min-h-screen w-full items-center justify-center px-4 py-8">
             <div className="w-full max-w-4xl mx-auto space-y-6 md:space-y-8">
 
                 <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">

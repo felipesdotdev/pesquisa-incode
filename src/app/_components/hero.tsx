@@ -46,7 +46,7 @@ export function Hero({ onStart, isLoading }: HeroProps) {
     }, [isLoading, onStart]);
 
     return (
-        <div className="flex min-h-screen w-full flex-col lg:flex-row bg-[#F5F5F7] overflow-hidden font-sans selection:bg-[#C09AE4] selection:text-white">
+        <div className="flex min-h-screen w-full flex-col lg:flex-row overflow-hidden font-sans selection:bg-[#C09AE4] selection:text-white">
             <style jsx global>{`
                 .ease-apple { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
                 

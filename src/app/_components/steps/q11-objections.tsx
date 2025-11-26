@@ -38,7 +38,7 @@ export function Q11Objections({ onNext }: Q11Props) {
     ];
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
+        <div className="flex min-h-screen w-full items-center justify-center px-4 py-8">
             <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
 
                 <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">

@@ -1,412 +1,633 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { startSurvey, saveSurveyStep } from '@/actions/survey';
-import { trackVisit, updateVisitEngagement, markVisitAsConverted, checkVisitorCompletion } from '@/actions/tracking';
+import { useState, useEffect, useCallback } from "react";
+import { startSurvey, saveSurveyStep } from "@/actions/survey";
+import {
+  trackVisit,
+  updateVisitEngagement,
+  markVisitAsConverted,
+  checkVisitorCompletion,
+} from "@/actions/tracking";
 
-import { Hero } from './hero';
-import { Q1Screening } from './steps/q1-screening';
-import { Q2Segment } from './steps/q2-segment';
-import { Q3TimeSpent } from './steps/q3-time-spent';
-import { Q4PainIntensity } from './steps/q4-pain-intensity';
-import { Q5CurrentSolution } from './steps/q5-current-solution';
-import { Q6Pitch } from './steps/q6-pitch';
-import { Q7UsageIntent } from './steps/q7-usage-intent';
-import { Q8PerceivedValue } from './steps/q8-perceived-value';
-import { Q9WillingnessToPay } from './steps/q9-willingness-to-pay';
-import { Q10MagicWand } from './steps/q10-magic-wand';
-import { Q11Objections } from './steps/q11-objections';
-import { Q12LeadCapture } from './steps/q12-lead-capture';
-import { ThankYou } from './steps/thank-you';
-import { XCircle, CheckCircle2, RefreshCw, Sparkles } from 'lucide-react';
+import { Hero } from "./hero";
+import { Q1Screening } from "./steps/q1-screening";
+import { Q2Segment } from "./steps/q2-segment";
+import { Q3TimeSpent } from "./steps/q3-time-spent";
+import { Q4PainIntensity } from "./steps/q4-pain-intensity";
+import { Q5CurrentSolution } from "./steps/q5-current-solution";
+import { Q6Pitch } from "./steps/q6-pitch";
+import { Q7UsageIntent } from "./steps/q7-usage-intent";
+import { Q8PerceivedValue } from "./steps/q8-perceived-value";
+import { Q9WillingnessToPay } from "./steps/q9-willingness-to-pay";
+import { Q10MagicWand } from "./steps/q10-magic-wand";
+import { Q11Objections } from "./steps/q11-objections";
+import { Q12LeadCapture } from "./steps/q12-lead-capture";
+import { ThankYou } from "./steps/thank-you";
+
+import { XCircle, CheckCircle2, RefreshCw, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Toaster, toast } from "react-hot-toast";
 
 // Gera um ID único para o visitante
 function generateVisitorId(): string {
-    return `v_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  return `v_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 }
 
-// Componente para quem já respondeu
-function AlreadyCompleted({ onRetake, completedAt }: { onRetake: () => void; completedAt: Date | null }) {
-    return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
-            <div className="w-full max-w-2xl mx-auto text-center space-y-6 animate-in fade-in duration-700">
-                {/* Ícone de sucesso */}
-                <div className="flex justify-center mb-8">
-                    <div className="relative">
-                        <div className="flex h-28 w-28 md:h-36 md:w-36 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-emerald-200 shadow-xl">
-                            <CheckCircle2 className="h-14 w-14 md:h-20 md:w-20 text-green-600" strokeWidth={1.5} />
-                        </div>
-                        <div className="absolute -top-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
-                            <Sparkles className="h-5 w-5 text-white" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Título */}
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-snug">
-                    Você já participou! 🎉
-                </h1>
-
-                {/* Texto principal */}
-                <p className="text-lg md:text-xl text-gray-700 max-w-lg mx-auto leading-relaxed">
-                    Muito obrigado pela sua contribuição! Sua opinião é extremamente valiosa para nós.
-                </p>
-
-                {/* Data da resposta */}
-                {completedAt && (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
-                        <span className="text-sm text-gray-500">Respondido em</span>
-                        <span className="text-sm font-semibold text-gray-900">
-                            {new Date(completedAt).toLocaleDateString('pt-BR', {
-                                day: '2-digit',
-                                month: 'long',
-                                year: 'numeric'
-                            })}
-                        </span>
-                    </div>
-                )}
-
-                {/* Card informativo */}
-                <div className="mt-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 max-w-md mx-auto">
-                    <h3 className="font-semibold text-gray-900 mb-2">O que acontece agora?</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                        Estamos analisando todas as respostas para criar a melhor solução possível. 
-                        Se você deixou seu contato, entraremos em contato em breve!
-                    </p>
-                </div>
-
-                {/* Botão para refazer */}
-                <div className="pt-6">
-                    <button
-                        onClick={onRetake}
-                        className="inline-flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 font-medium rounded-xl hover:bg-white/50 transition-all duration-200"
-                    >
-                        <RefreshCw className="h-4 w-4" />
-                        Quero responder novamente
-                    </button>
-                </div>
-
-                {/* Footer */}
-                <div className="pt-8 text-xs text-gray-400">
-                    Pesquisa Incode © 2025
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function Disqualified() {
-    return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
-            <div className="w-full max-w-2xl mx-auto text-center space-y-6 animate-in fade-in duration-700">
-                <div className="flex justify-center mb-8">
-                    <div className="flex h-24 w-24 md:h-32 md:w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#FFE5E5] to-[#FFD0D0] shadow-lg">
-                        <XCircle className="h-12 w-12 md:h-16 md:w-16 text-[#FF6B6B]" strokeWidth={2} />
-                    </div>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
-                    Obrigado pelo interesse!
-                </h1>
-                <p className="text-base md:text-lg text-gray-700 max-w-lg mx-auto leading-relaxed">
-                    No momento, esta pesquisa é exclusiva para <span className="font-semibold text-gray-900">donos e gestores de pequenos negócios</span> que buscam automação.
-                </p>
-                <p className="text-sm md:text-base text-gray-500 pt-4">
-                    Agradecemos muito seu tempo e interesse! 💜
-                </p>
-                <div className="pt-12 text-xs text-gray-400">
-                    Pesquisa Incode © 2025
-                </div>
-            </div>
-        </div>
-    );
-}
-
-type Step = 'loading' | 'already_completed' | 'hero' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10' | 'q11' | 'q12' | 'thank_you' | 'disqualified';
+type Step =
+  | "loading"
+  | "hero"
+  | "q1"
+  | "q2"
+  | "q3"
+  | "q4"
+  | "q5"
+  | "q6"
+  | "q7"
+  | "q8"
+  | "q9"
+  | "q10"
+  | "q11"
+  | "q12"
+  | "thankyou"
+  | "disqualified"
+  | "alreadycompleted";
 
 export function SurveyManager() {
-    const [step, setStep] = useState<Step>('loading');
-    const [surveyId, setSurveyId] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [visitorId, setVisitorId] = useState<string | null>(null);
-    const [completedAt, setCompletedAt] = useState<Date | null>(null);
-    const [pageLoadTime] = useState(Date.now());
-    const [scrollDepth, setScrollDepth] = useState(0);
+  const [step, setStep] = useState<Step>("loading");
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [visitorId, setVisitorId] = useState<string | null>(null);
+  const [completedAt, setCompletedAt] = useState<Date | null>(null);
+  const [pageLoadTime] = useState(Date.now());
+  const [scrollDepth, setScrollDepth] = useState(0);
 
-    // Inicializar visitante e rastrear visita
-    useEffect(() => {
-        const initVisitor = async () => {
-            try {
-                // Verificar ou criar visitorId no localStorage
-                let storedVisitorId = localStorage.getItem('incode_visitor_id');
-                if (!storedVisitorId) {
-                    storedVisitorId = generateVisitorId();
-                    localStorage.setItem('incode_visitor_id', storedVisitorId);
-                }
-                setVisitorId(storedVisitorId);
-
-                // Coletar dados do cliente
-                const params = new URLSearchParams(window.location.search);
-                
-                // Rastrear a visita
-                await trackVisit({
-                    visitorId: storedVisitorId,
-                    utmSource: params.get('utm_source'),
-                    utmMedium: params.get('utm_medium'),
-                    utmCampaign: params.get('utm_campaign'),
-                    utmTerm: params.get('utm_term'),
-                    utmContent: params.get('utm_content'),
-                    referrer: document.referrer || null,
-                    landingPage: window.location.pathname + window.location.search,
-                    screenWidth: window.screen.width,
-                    screenHeight: window.screen.height,
-                    viewportWidth: window.innerWidth,
-                    viewportHeight: window.innerHeight,
-                    devicePixelRatio: window.devicePixelRatio,
-                    touchSupport: 'ontouchstart' in window,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    metadata: {
-                        language: navigator.language,
-                        languages: navigator.languages,
-                        cookiesEnabled: navigator.cookieEnabled,
-                        doNotTrack: navigator.doNotTrack,
-                        platform: navigator.platform,
-                        maxTouchPoints: navigator.maxTouchPoints,
-                        hardwareConcurrency: navigator.hardwareConcurrency,
-                        colorDepth: window.screen.colorDepth,
-                        connectionType: (navigator as any).connection?.effectiveType,
-                    }
-                });
-
-                // Verificar se já respondeu
-                const completion = await checkVisitorCompletion(storedVisitorId);
-                
-                if (completion.isCompleted) {
-                    setCompletedAt(completion.respondedAt);
-                    setStep('already_completed');
-                } else {
-                    setStep('hero');
-                }
-            } catch (error) {
-                console.error('Erro ao inicializar visitante:', error);
-                setStep('hero'); // Em caso de erro, prossegue normalmente
-            }
-        };
-
-        initVisitor();
-    }, []);
-
-    // Rastrear scroll depth
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
-            setScrollDepth(Math.max(scrollDepth, scrollPercent));
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [scrollDepth]);
-
-    // Atualizar tempo no site ao sair
-    useEffect(() => {
-        const handleBeforeUnload = async () => {
-            if (visitorId) {
-                const timeOnSite = Math.round((Date.now() - pageLoadTime) / 1000);
-                await updateVisitEngagement(visitorId, {
-                    timeOnSiteSeconds: timeOnSite,
-                    scrollDepthPercent: scrollDepth,
-                });
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [visitorId, pageLoadTime, scrollDepth]);
-
-    // Permitir refazer a pesquisa
-    const handleRetake = useCallback(() => {
-        // Gerar novo visitorId para a nova sessão
-        const newVisitorId = generateVisitorId();
-        localStorage.setItem('incode_visitor_id', newVisitorId);
-        setVisitorId(newVisitorId);
-        setSurveyId(null);
-        setStep('hero');
-    }, []);
-
-    // Helper para salvar
-    const saveStep = async (stepName: string, data: any, time: number) => {
-        if (!surveyId) return;
-        try {
-            await saveSurveyStep({
-                surveyId,
-                stepName,
-                timeSpentOnStep: time,
-                data
-            });
-            
-            // Atualizar último passo visto
-            if (visitorId) {
-                await updateVisitEngagement(visitorId, { lastSeenStep: stepName });
-            }
-        } catch (e) {
-            console.error("Erro ao salvar passo", e);
+  // Inicializar visitante e rastrear visita
+  useEffect(() => {
+    const initVisitor = async () => {
+      try {
+        // Verificar ou criar visitorId no localStorage
+        let storedVisitorId = localStorage.getItem("incode_visitor_id");
+        if (!storedVisitorId) {
+          storedVisitorId = generateVisitorId();
+          localStorage.setItem("incode_visitor_id", storedVisitorId);
         }
-    };
+        setVisitorId(storedVisitorId);
 
-    // --- HANDLERS ---
+        // Obter UTMs da URL
+        const params = new URLSearchParams(window.location.search);
 
-    const handleStart = async () => {
-        setIsLoading(true);
-        try {
-            const params = new URLSearchParams(window.location.search);
-            
-            // Marcar que clicou em começar
-            if (visitorId) {
-                await updateVisitEngagement(visitorId, { clickedStart: true });
-            }
+        // Registrar visita
+        await trackVisit({
+          visitorId: storedVisitorId,
+          utmSource: params.get("utm_source"),
+          utmMedium: params.get("utm_medium"),
+          utmCampaign: params.get("utm_campaign"),
+          utmTerm: params.get("utm_term"),
+          utmContent: params.get("utm_content"),
+          referrer: document.referrer,
+          landingPage: window.location.href,
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio,
+          touchSupport: "ontouchstart" in window,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        });
 
-            const result = await startSurvey({
-                visitorId: visitorId,
-                utmSource: params.get('utm_source'),
-                utmMedium: params.get('utm_medium'),
-                utmCampaign: params.get('utm_campaign'),
-                referrer: document.referrer,
-            });
-
-            if (result?.success && result.id) {
-                setSurveyId(result.id);
-                
-                // Marcar visita como convertida
-                if (visitorId) {
-                    await markVisitAsConverted(visitorId, result.id);
-                }
-                
-                // Salvar ID da resposta no localStorage
-                localStorage.setItem('incode_response_id', result.id);
-                
-                setStep('q1');
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Erro ao iniciar. Tente recarregar a página.");
-        } finally {
-            setIsLoading(false);
+        // Verificar se já respondeu
+        const completion = await checkVisitorCompletion(storedVisitorId);
+        if (completion.isCompleted) {
+          setCompletedAt(completion.respondedAt);
+          setStep("alreadycompleted");
+        } else {
+          setStep("hero");
         }
+      } catch (error) {
+        console.error("Erro ao inicializar visitante:", error);
+        setStep("hero"); // Em caso de erro, prossegue normalmente
+      }
     };
 
-    // Q1 -> Q2 ou Disqualified
-    const handleQ1Next = async (answer: string, time: number) => {
-        await saveStep('q1_screening', { isBusinessOwner: answer !== 'no' }, time);
-        if (answer === 'no') setStep('disqualified');
-        else setStep('q2');
+    initVisitor();
+  }, []);
+
+  // Rastrear scroll depth
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+      setScrollDepth(Math.max(scrollDepth, scrollPercent));
     };
 
-    // Q2 -> Q3
-    const handleQ2Next = async (segment: string, time: number) => {
-        await saveStep('q2_segment', { businessSegment: segment }, time);
-        setStep('q3');
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrollDepth]);
+
+  // Atualizar tempo no site ao sair
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (visitorId) {
+        const timeOnSite = Math.round((Date.now() - pageLoadTime) / 1000);
+        await updateVisitEngagement(visitorId, {
+          timeOnSiteSeconds: timeOnSite,
+          scrollDepthPercent: scrollDepth,
+        });
+      }
     };
 
-    // Q3 -> Q4 ou Q6 (Pulo do Diagnóstico)
-    const handleQ3Next = async (answer: string, time: number) => {
-        await saveStep('q3_time_spent', { weeklyTimeSpent: answer }, time);
-        if (answer === 'none') setStep('q6');
-        else setStep('q4');
-    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [visitorId, pageLoadTime, scrollDepth]);
 
-    // Q4 -> Q5 ou Q6 (Pulo da Ferramenta)
-    const handleQ4Next = async (value: number, time: number) => {
-        await saveStep('q4_pain_intensity', { painIntensity: value }, time);
-        if (value < 5) setStep('q6');
-        else setStep('q5');
-    };
+  // Permitir refazer a pesquisa
+  const handleRetake = useCallback(() => {
+    // Gerar novo visitorId para a nova sessão
+    const newVisitorId = generateVisitorId();
+    localStorage.setItem("incode_visitor_id", newVisitorId);
+    setVisitorId(newVisitorId);
+    setSurveyId(null);
+    setStep("hero");
+  }, []);
 
-    // Q5 -> Q6
-    const handleQ5Next = async (solution: string, tool: string | null, time: number) => {
-        await saveStep('q5_current_solution', { currentSolution: solution, currentSolutionTool: tool || undefined }, time);
-        setStep('q6');
-    };
+  // Helper para salvar
+  const saveStep = async (stepName: string, data: any, time: number) => {
+    if (!surveyId) return;
 
-    // Q6 -> Q7
-    const handleQ6Next = async (time: number) => {
-        await saveStep('q6_pitch_view', {}, time);
-        setStep('q7');
-    };
+    try {
+      const result = await saveSurveyStep(surveyId, stepName, time, data);
+      
+      if (!result.success) {
+        toast.error(result.error || "Erro ao salvar resposta");
+      }
 
-    // Q7 -> Q8 ou Q11 (Objeção direta)
-    const handleQ7Next = async (intent: string, time: number) => {
-        await saveStep('q7_usage_intent', { usageIntent: intent }, time);
-        if (intent === 'probably_not' || intent === 'definitely_not') setStep('q11');
-        else setStep('q8');
-    };
-
-    // Q8 -> Q9
-    const handleQ8Next = async (value: string, time: number) => {
-        await saveStep('q8_perceived_value', { perceivedValue: value }, time);
-        setStep('q9');
-    };
-
-    // Q9 -> Q10 (Insights)
-    const handleQ9Next = async (value: string, time: number) => {
-        await saveStep('q9_willingness_to_pay', { willingnessToPay: value }, time);
-        setStep('q10');
-    };
-
-    // Q10 -> Q12
-    const handleQ10Next = async (text: string, time: number) => {
-        await saveStep('q10_magic_wand', { magicWandTask: text }, time);
-        setStep('q12');
-    };
-
-    // Q11 -> Q12 (Tenta capturar lead mesmo com objeção)
-    const handleQ11Next = async (text: string, time: number) => {
-        await saveStep('q11_objections', { objectionReason: text }, time);
-        setStep('q12');
-    };
-
-    // Q12 -> Thank You
-    const handleQ12Finish = async (email: string | null, phone: string | null, time: number) => {
-        await saveStep('q12_lead_capture', { wantsBeta: !!email, email: email || undefined, whatsapp: phone || undefined }, time);
-        await saveStep('completed', {}, 0);
-        
-        // Marcar como completado no localStorage
-        localStorage.setItem('incode_completed', 'true');
-        localStorage.setItem('incode_completed_at', new Date().toISOString());
-        
-        setStep('thank_you');
-    };
-
-    // Loading inicial
-    if (step === 'loading') {
-        return (
-            <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF]">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" />
-                    <p className="text-sm text-gray-500">Carregando...</p>
-                </div>
-            </div>
-        );
+      // Atualizar último passo visto
+      if (visitorId) {
+        await updateVisitEngagement(visitorId, { lastSeenStep: stepName });
+      }
+    } catch (e) {
+      console.error("Erro ao salvar passo:", e);
+      toast.error("Erro ao salvar. Suas respostas podem não ter sido registradas.");
     }
+  };
 
-    return (
-        <main className="w-full">
-            {step === 'already_completed' && <AlreadyCompleted onRetake={handleRetake} completedAt={completedAt} />}
-            {step === 'hero' && <Hero onStart={handleStart} isLoading={isLoading} />}
-            {step === 'q1' && <Q1Screening onNext={handleQ1Next} />}
-            {step === 'q2' && <Q2Segment onNext={handleQ2Next} />}
-            {step === 'q3' && <Q3TimeSpent onNext={handleQ3Next} />}
-            {step === 'q4' && <Q4PainIntensity onNext={handleQ4Next} />}
-            {step === 'q5' && <Q5CurrentSolution onNext={handleQ5Next} />}
-            {step === 'q6' && <Q6Pitch onNext={handleQ6Next} />}
-            {step === 'q7' && <Q7UsageIntent onNext={handleQ7Next} />}
-            {step === 'q8' && <Q8PerceivedValue onNext={handleQ8Next} />}
-            {step === 'q9' && <Q9WillingnessToPay onNext={handleQ9Next} />}
-            {step === 'q10' && <Q10MagicWand onNext={handleQ10Next} />}
-            {step === 'q11' && <Q11Objections onNext={handleQ11Next} />}
-            {step === 'q12' && <Q12LeadCapture onFinish={handleQ12Finish} />}
-            {step === 'thank_you' && <ThankYou />}
-            {step === 'disqualified' && <Disqualified />}
-        </main>
+  // --- HANDLERS ---
+
+  const handleStart = async () => {
+    setIsLoading(true);
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+
+      // Marcar que clicou em "começar"
+      if (visitorId) {
+        await updateVisitEngagement(visitorId, { clickedStart: true });
+      }
+
+      const result = await startSurvey({
+        visitorId: visitorId,
+        utmSource: params.get("utm_source"),
+        utmMedium: params.get("utm_medium"),
+        utmCampaign: params.get("utm_campaign"),
+        referrer: document.referrer,
+      });
+
+      if (result?.success && result.id) {
+        setSurveyId(result.id);
+
+        // Marcar visita como convertida
+        if (visitorId) {
+          await markVisitAsConverted(visitorId, result.id);
+        }
+
+        // Salvar ID da resposta no localStorage
+        localStorage.setItem("incode_response_id", result.id);
+
+        toast.success("Pesquisa iniciada!");
+        setStep("q1");
+      } else {
+        toast.error(result.error || "Erro ao iniciar pesquisa");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao iniciar. Tente recarregar a página.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Q1 -> Q2 ou Disqualified
+  const handleQ1Next = async (answer: string, time: number) => {
+    await saveStep("q1-screening", { isBusinessOwner: answer !== "no" }, time);
+
+    if (answer === "no") {
+      setStep("disqualified");
+    } else {
+      setStep("q2");
+    }
+  };
+
+  // Q2 -> Q3
+  const handleQ2Next = async (segment: string, time: number) => {
+    await saveStep("q2-segment", { businessSegment: segment }, time);
+    setStep("q3");
+  };
+
+  // Q3 -> Q4 ou Q6 (Pulo do Diagnóstico)
+  const handleQ3Next = async (answer: string, time: number) => {
+    await saveStep("q3-timespent", { weeklyTimeSpent: answer }, time);
+
+    if (answer === "none") {
+      setStep("q6");
+    } else {
+      setStep("q4");
+    }
+  };
+
+  // Q4 -> Q5 ou Q6 (Pulo da Ferramenta)
+  const handleQ4Next = async (value: number, time: number) => {
+    await saveStep("q4-painintensity", { painIntensity: value }, time);
+
+    if (value < 5) {
+      setStep("q6");
+    } else {
+      setStep("q5");
+    }
+  };
+
+  // Q5 -> Q6
+  const handleQ5Next = async (
+    solution: string,
+    tool: string | null,
+    time: number
+  ) => {
+    await saveStep(
+      "q5-currentsolution",
+      {
+        currentSolution: solution,
+        currentSolutionTool: tool || undefined,
+      },
+      time
     );
+    setStep("q6");
+  };
+
+  // Q6 -> Q7
+  const handleQ6Next = async (time: number) => {
+    await saveStep("q6-pitch", {}, time);
+    setStep("q7");
+  };
+
+  // Q7 -> Q8
+  const handleQ7Next = async (intent: string, time: number) => {
+    await saveStep("q7-usageintent", { usageIntent: intent }, time);
+    setStep("q8");
+  };
+
+  // Q8 -> Q9
+  const handleQ8Next = async (value: string, time: number) => {
+    await saveStep("q8-perceivedvalue", { perceivedValue: value }, time);
+    setStep("q9");
+  };
+
+  // Q9 -> Q10
+  const handleQ9Next = async (willingness: string, time: number) => {
+    await saveStep("q9-willingnesstopay", { willingnessToPay: willingness }, time);
+    setStep("q10");
+  };
+
+  // Q10 -> Q11
+  const handleQ10Next = async (task: string, time: number) => {
+    await saveStep("q10-magicwand", { magicWandTask: task }, time);
+    setStep("q11");
+  };
+
+  // Q11 -> Q12
+  const handleQ11Next = async (objection: string | null, time: number) => {
+    await saveStep("q11-objections", { objectionReason: objection || undefined }, time);
+    setStep("q12");
+  };
+
+  // Q12 -> Thank You
+  const handleQ12Next = async () => {
+    setStep("thankyou");
+  };
+
+  // Animação de transição (slide vertical)
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      y: 50,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.1, 0.25, 1], // Easing suave tipo Apple
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -50,
+      transition: {
+        duration: 0.3,
+        ease: [0.25, 0.1, 0.25, 1],
+      },
+    },
+  };
+
+  return (
+    <>
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#18181B",
+            color: "#fff",
+            borderRadius: "12px",
+            padding: "16px",
+            fontSize: "14px",
+            fontWeight: 500,
+          },
+          success: {
+            iconTheme: {
+              primary: "#10b981",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff",
+            },
+          },
+        }}
+      />
+
+      <AnimatePresence mode="wait">
+        {step === "loading" && (
+          <motion.div
+            key="loading"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
+          >
+            <div className="text-center">
+              <RefreshCw className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
+              <p className="text-gray-600 font-medium">Carregando pesquisa...</p>
+            </div>
+          </motion.div>
+        )}
+
+        {step === "hero" && (
+          <motion.div
+            key="hero"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Hero onStart={handleStart} isLoading={isLoading} />
+          </motion.div>
+        )}
+
+        {step === "q1" && (
+          <motion.div
+            key="q1"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q1Screening onNext={handleQ1Next} />
+          </motion.div>
+        )}
+
+        {step === "q2" && (
+          <motion.div
+            key="q2"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q2Segment onNext={handleQ2Next} />
+          </motion.div>
+        )}
+
+        {step === "q3" && (
+          <motion.div
+            key="q3"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q3TimeSpent onNext={handleQ3Next} />
+          </motion.div>
+        )}
+
+        {step === "q4" && (
+          <motion.div
+            key="q4"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q4PainIntensity onNext={handleQ4Next} />
+          </motion.div>
+        )}
+
+        {step === "q5" && (
+          <motion.div
+            key="q5"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q5CurrentSolution onNext={handleQ5Next} />
+          </motion.div>
+        )}
+
+        {step === "q6" && (
+          <motion.div
+            key="q6"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q6Pitch onNext={handleQ6Next} />
+          </motion.div>
+        )}
+
+        {step === "q7" && (
+          <motion.div
+            key="q7"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q7UsageIntent onNext={handleQ7Next} />
+          </motion.div>
+        )}
+
+        {step === "q8" && (
+          <motion.div
+            key="q8"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q8PerceivedValue onNext={handleQ8Next} />
+          </motion.div>
+        )}
+
+        {step === "q9" && (
+          <motion.div
+            key="q9"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q9WillingnessToPay onNext={handleQ9Next} />
+          </motion.div>
+        )}
+
+        {step === "q10" && (
+          <motion.div
+            key="q10"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q10MagicWand onNext={handleQ10Next} />
+          </motion.div>
+        )}
+
+        {step === "q11" && (
+          <motion.div
+            key="q11"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q11Objections onNext={handleQ11Next} />
+          </motion.div>
+        )}
+
+        {step === "q12" && (
+          <motion.div
+            key="q12"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Q12LeadCapture onNext={handleQ12Next} surveyId={surveyId!} />
+          </motion.div>
+        )}
+
+        {step === "thankyou" && (
+          <motion.div
+            key="thankyou"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <ThankYou completedAt={completedAt} />
+          </motion.div>
+        )}
+
+        {step === "disqualified" && (
+          <motion.div
+            key="disqualified"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4"
+          >
+            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center border border-gray-100">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <XCircle className="w-8 h-8 text-orange-600" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Obrigado pelo seu tempo! 💜
+              </h2>
+
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                No momento, esta pesquisa é exclusiva para donos e gestores de
+                pequenos negócios que buscam automação.
+              </p>
+
+              <p className="text-sm text-gray-500">
+                Agradecemos muito seu interesse!
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {step === "alreadycompleted" && (
+          <motion.div
+            key="alreadycompleted"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4"
+          >
+            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center border border-gray-100">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-8 h-8 text-green-600" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Você já respondeu! ✅
+              </h2>
+
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Detectamos que você já completou esta pesquisa anteriormente.
+                Agradecemos imensamente sua contribuição!
+              </p>
+
+              {completedAt && (
+                <p className="text-sm text-gray-500 mb-6">
+                  Respondido em:{" "}
+                  {new Date(completedAt).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              )}
+
+              <button
+                onClick={handleRetake}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
+              >
+                <Sparkles className="w-5 h-5" />
+                Responder Novamente
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 }

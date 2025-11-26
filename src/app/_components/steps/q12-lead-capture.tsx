@@ -1,125 +1,186 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import { Mail, Phone, CheckCircle, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { completeSurvey } from "@/actions/survey";
+import { Mail, MessageCircle, CheckCircle2, Loader2, ArrowRight, Sparkles } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface Q12Props {
-    onFinish: (email: string | null, phone: string | null, timeSpent: number) => void;
+  onNext: () => void;
+  surveyId: string;
 }
 
-export function Q12LeadCapture({ onFinish }: Q12Props) {
-    const [startTime] = useState(Date.now());
-    const [wantsToJoin, setWantsToJoin] = useState<boolean | null>(null);
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+export function Q12LeadCapture({ onNext, surveyId }: Q12Props) {
+  const [startTime] = useState(Date.now());
+  const [wantsBeta, setWantsBeta] = useState(true);
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const endTime = Date.now();
-        onFinish(email || null, phone || null, (endTime - startTime) / 1000);
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    if (wantsToJoin === null) {
-        return (
-            <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
-                <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
-
-                    <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
-                        <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
-                            <span className="text-lg md:text-xl font-normal text-gray-900">12</span>
-                            <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
-                        </div>
-                        <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
-                            🎉 Quer testar o Incode GRÁTIS quando lançarmos?
-                        </h2>
-                        <p className="text-sm md:text-base text-gray-600">
-                            O beta está previsto para Dezembro de 2025.
-                        </p>
-                    </div>
-
-                    <div className="pl-8 md:pl-20 flex flex-col gap-3">
-                        <button
-                            onClick={() => setWantsToJoin(true)}
-                            className="w-full rounded-2xl bg-[#C2A9F9] py-4 md:py-5 text-base md:text-lg font-bold text-white shadow-lg hover:bg-[#B290F7] hover:scale-[1.02] transition-all"
-                        >
-                            Sim! Me avise do lançamento 🚀
-                        </button>
-                        <button
-                            onClick={() => onFinish(null, null, 0)}
-                            className="w-full rounded-2xl bg-gray-200 py-4 md:py-5 text-sm md:text-base font-semibold text-gray-600 hover:bg-gray-300 transition-all"
-                        >
-                            Não, obrigado. Apenas finalize.
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        );
+    if (!email && !whatsapp) {
+      toast.error("Por favor, forneça pelo menos um método de contato.");
+      return;
     }
 
-    return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-[#FAF7EF] px-4 py-8">
-            <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Por favor, insira um email válido.");
+      return;
+    }
 
-                <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
-                    <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
-                        <span className="text-lg md:text-xl font-normal text-gray-900">12</span>
-                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-green-100 flex-shrink-0">
-                            <CheckCircle className="h-6 w-6 md:h-7 md:w-7 text-green-600" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Excelente!</h2>
-                            <p className="text-sm md:text-base text-gray-600">Onde devemos te avisar?</p>
-                        </div>
-                    </div>
-                </div>
+    setIsSubmitting(true);
 
-                <form onSubmit={handleSubmit} className="pl-8 md:pl-20 space-y-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 ml-1">Seu melhor e-mail</label>
-                        <div className="relative group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#C2A9F9] transition-colors">
-                                <Mail className="h-5 w-5" />
-                            </div>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="nome@empresa.com"
-                                className="w-full rounded-2xl border-2 border-gray-200 pl-12 pr-4 py-4 text-base outline-none transition-all focus:border-[#C2A9F9] focus:ring-4 focus:ring-[#C2A9F9]/10 shadow-sm placeholder:text-gray-400"
-                            />
-                        </div>
-                    </div>
+    try {
+      const endTime = Date.now();
+      const timeSpent = (endTime - startTime) / 1000;
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 ml-1">WhatsApp (Opcional)</label>
-                        <div className="relative group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#C2A9F9] transition-colors">
-                                <Phone className="h-5 w-5" />
-                            </div>
-                            <input
-                                type="tel"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                placeholder="(11) 99999-9999"
-                                className="w-full rounded-2xl border-2 border-gray-200 pl-12 pr-4 py-4 text-base outline-none transition-all focus:border-[#C2A9F9] focus:ring-4 focus:ring-[#C2A9F9]/10 shadow-sm placeholder:text-gray-400"
-                            />
-                        </div>
-                    </div>
+      const result = await completeSurvey(
+        surveyId,
+        timeSpent,
+        wantsBeta,
+        email || null,
+        whatsapp || null
+      );
 
-                    <button
-                        type="submit"
-                        className="mt-6 flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg active:scale-[0.98]"
-                    >
-                        OK
-                    </button>
-                </form>
+      if (result.success) {
+        if (email) {
+          if (result.emailSent) {
+            toast.success(
+              "✉️ Email de confirmação enviado! Verifique sua caixa de entrada.",
+              { duration: 5000 }
+            );
+          } else {
+            toast.error(
+              "⚠️ Não conseguimos enviar o email de confirmação. Mas sua resposta foi salva!",
+              { duration: 5000 }
+            );
+          }
+        } else {
+          toast.success("✅ Resposta salva com sucesso!");
+        }
 
-            </div>
+        setTimeout(() => {
+          onNext();
+        }, 1500);
+      } else {
+        toast.error(result.error || "Erro ao finalizar pesquisa");
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao enviar. Tente novamente.");
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center px-4 py-8">
+      <div className="w-full max-w-3xl mx-auto space-y-6 md:space-y-8">
+        
+        {/* Header */}
+        <div className="space-y-2 md:space-y-3 relative pl-8 md:pl-20">
+          <div className="flex items-center gap-2 absolute left-0 md:left-8 top-0.5">
+            <span className="text-lg md:text-xl font-normal text-gray-900">12</span>
+            <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
+          </div>
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+            O beta está previsto para Dezembro de 2025.
+          </h2>
+          <p className="text-base md:text-lg text-gray-600">
+            Onde devemos te avisar?
+          </p>
         </div>
-    );
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="pl-8 md:pl-20 space-y-6">
+          
+          {/* Beta Interest Checkbox */}
+          <div className="bg-gradient-to-br from-[#F3EBFC] to-[#F8F4FC] rounded-2xl border-2 border-gray-200 p-5 md:p-6 shadow-md">
+            <label className="flex items-start gap-4 cursor-pointer group">
+              <div className="flex-shrink-0 mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={wantsBeta}
+                  onChange={(e) => setWantsBeta(e.target.checked)}
+                  className="w-5 h-5 md:w-6 md:h-6 text-[#C2A9F9] bg-white border-2 border-gray-300 rounded focus:ring-2 focus:ring-[#C2A9F9]/20 cursor-pointer"
+                />
+              </div>
+              <div className="flex-1">
+                <span className="text-base md:text-lg font-semibold text-gray-900 block mb-1 group-hover:text-gray-700 transition-colors">
+                  Quero participar do Beta! 🚀
+                </span>
+                <span className="text-sm md:text-base text-gray-600">
+                  Receba acesso prioritário quando lançarmos em dezembro
+                </span>
+              </div>
+            </label>
+          </div>
+
+          {/* Email Input */}
+          <div className="space-y-3">
+            <label htmlFor="email" className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
+              <Mail className="w-4 h-4 md:w-5 md:h-5 text-[#B290F7]" />
+              Email (recomendado)
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="seu@email.com"
+              className="w-full rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-5 text-sm md:text-base shadow-md outline-none focus:border-[#C2A9F9] focus:ring-2 focus:ring-[#C2A9F9]/20 placeholder:text-gray-400 transition-all"
+            />
+          </div>
+
+          {/* WhatsApp Input */}
+          <div className="space-y-3">
+            <label htmlFor="whatsapp" className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
+              <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
+              WhatsApp (opcional)
+            </label>
+            <input
+              id="whatsapp"
+              type="tel"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              placeholder="(11) 99999-9999"
+              className="w-full rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-5 text-sm md:text-base shadow-md outline-none focus:border-green-400 focus:ring-2 focus:ring-green-400/20 placeholder:text-gray-400 transition-all"
+            />
+          </div>
+
+          {/* Privacy Notice */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 md:p-5 rounded-2xl text-blue-800 text-xs md:text-sm border-2 border-blue-200 shadow-sm leading-relaxed">
+            🔒 Seus dados estão protegidos pela LGPD. Usaremos apenas para entrar em contato sobre o beta do Incode. Você pode cancelar a qualquer momento.
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex text-lg md:text-xl px-3 md:px-3.5 py-1.5 font-bold items-center justify-center gap-2 rounded-full bg-[#C2A9F9] text-white shadow-md transition-all hover:bg-[#B290F7] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#C2A9F9]"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                Finalizar Pesquisa
+              </>
+            )}
+          </button>
+
+          {/* Footer Note */}
+          <p className="text-center text-sm md:text-base text-gray-500 pt-2">
+            💜 Muito obrigado por ajudar a construir o futuro da automação no Brasil!
+          </p>
+        </form>
+
+      </div>
+    </div>
+  );
 }
