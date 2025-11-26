@@ -2,6 +2,10 @@ import { getResponses } from '@/actions/admin';
 import { translate } from '@/lib/formatters';
 import Link from 'next/link';
 
+// Desabilitar cache para sempre buscar dados atualizados
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ResponsesPage() {
     const responses = await getResponses();
 

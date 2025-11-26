@@ -1,6 +1,10 @@
 import { getReferenceSources, getReferenceSourceStats } from '@/actions/admin';
 import { SourcesClient } from './_components/sources-client';
 
+// Desabilitar cache para sempre buscar dados atualizados
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function SourcesPage() {
     const sources = await getReferenceSources();
 

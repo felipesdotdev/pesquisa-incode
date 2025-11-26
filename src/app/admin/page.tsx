@@ -1,6 +1,10 @@
 import { getDashboardData, getResponses, getFilterOptions } from '@/actions/admin';
 import { DashboardClient } from './_components/dashboard-client';
 
+// Desabilitar cache para sempre buscar dados atualizados
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function AdminDashboard({
     searchParams,
 }: {

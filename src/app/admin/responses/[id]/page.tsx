@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { ArrowLeft, User, Clock, MapPin, Monitor, BarChart2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
+// Desabilitar cache para sempre buscar dados atualizados
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ResponseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const response = await getResponseById(id);
