@@ -81,3 +81,15 @@ export function formatDate(date: Date | null) {
         minute: '2-digit',
     }).format(date);
 }
+
+// Decodifica valores que podem estar com encoding URL (ex: "Sumar%C3%A9" -> "Sumaré")
+export function decodeLocation(value: string | null | undefined): string {
+    if (!value || value === 'unknown' || value === '-') return value || '-';
+    try {
+        // Tenta decodificar se estiver com encoding URL
+        return decodeURIComponent(value);
+    } catch {
+        // Se não for encoding válido, retorna o valor original
+        return value;
+    }
+}

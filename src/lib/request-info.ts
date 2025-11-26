@@ -17,9 +17,21 @@ export async function getRequestInfo() {
     const browser = parser.getBrowser();
 
     // 3. Geolocalização (Vercel/Cloudflare injetam esses headers)
+    // Decodifica valores que podem vir com encoding URL
+    const decodeIfEncoded = (value: string): string => {
+        if (!value || value === 'unknown') return value;
+        try {
+            // Tenta decodificar se estiver com encoding URL
+            return decodeURIComponent(value);
+        } catch {
+            // Se não for encoding válido, retorna o valor original
+            return value;
+        }
+    };
+
     const country = headersList.get('x-vercel-ip-country') || 'unknown';
-    const city = headersList.get('x-vercel-ip-city') || 'unknown';
-    const region = headersList.get('x-vercel-ip-country-region') || 'unknown';
+    const city = decodeIfEncoded(headersList.get('x-vercel-ip-city') || 'unknown');
+    const region = decodeIfEncoded(headersList.get('x-vercel-ip-country-region') || 'unknown');
 
     // Normaliza os dados
     return {

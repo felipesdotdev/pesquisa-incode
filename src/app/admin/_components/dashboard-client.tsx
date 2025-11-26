@@ -9,7 +9,7 @@ import {
     Calendar, MapPin, Link2
 } from 'lucide-react';
 import Link from 'next/link';
-import { translate } from '@/lib/formatters';
+import { translate, decodeLocation } from '@/lib/formatters';
 import type { DashboardFilters } from '@/actions/admin';
 
 type DashboardClientProps = {
@@ -385,7 +385,7 @@ export function DashboardClient({ data, responses, filterOptions, currentFilters
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-gray-600 text-xs">
-                                        {response.city && response.region ? `${response.city}, ${response.region}` : '-'}
+                                        {response.city && response.region ? `${decodeLocation(response.city)}, ${decodeLocation(response.region)}` : '-'}
                                     </td>
                                     <td className="px-6 py-4 text-gray-600">{response.email || '-'}</td>
                                     <td className="px-6 py-4 text-right">

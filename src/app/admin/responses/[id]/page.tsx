@@ -1,5 +1,5 @@
 import { getResponseById } from '@/actions/admin';
-import { translate, formatDate, formatDuration } from '@/lib/formatters';
+import { translate, formatDate, formatDuration, decodeLocation } from '@/lib/formatters';
 import Link from 'next/link';
 import { ArrowLeft, User, Clock, MapPin, Monitor, BarChart2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -186,8 +186,8 @@ export default async function ResponseDetailsPage({ params }: { params: Promise<
                             <div>
                                 <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Localização</p>
                                 <p className="font-medium text-gray-900">
-                                    {response.city ? `${response.city}, ` : ''}
-                                    {response.region || '-'}
+                                    {response.city ? `${decodeLocation(response.city)}, ` : ''}
+                                    {decodeLocation(response.region)}
                                 </p>
                                 <p className="text-xs text-gray-400">{response.country || ''}</p>
                             </div>
