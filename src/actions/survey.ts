@@ -10,6 +10,7 @@ import { getRequestInfo } from '@/lib/request-info';
 // Chamamos isso assim que a página carrega ou o usuário clica em "Começar"
 export async function startSurvey(metadata: {
     // Mantemos os UTMs vindo do cliente, pois o servidor não vê a URL completa facilmente em actions
+    visitorId?: string | null;
     utmSource?: string | null;
     utmMedium?: string | null;
     utmCampaign?: string | null;
@@ -24,6 +25,7 @@ export async function startSurvey(metadata: {
         const result = await db.insert(surveyResponses).values({
             status: 'started',
             stepTimings: {},
+            visitorId: metadata.visitorId,
 
             // Dados de Marketing (Client-side)
             utmSource: metadata.utmSource,

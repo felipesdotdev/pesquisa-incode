@@ -1,5 +1,30 @@
 import { pgTable, uuid, text, integer, boolean, timestamp, jsonb, varchar } from 'drizzle-orm/pg-core';
 
+// Tabela de Fontes de Referência (Links personalizados para divulgadores)
+export const referenceSources = pgTable('reference_sources', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+
+    // Identificador único do link (vai ser usado como utm_source)
+    slug: varchar('slug', { length: 100 }).notNull().unique(),
+
+    // Nome/descrição do divulgador
+    name: text('name').notNull(),
+
+    // Descrição adicional (ex: "Amigo do Instagram", "Parceiro X")
+    description: text('description'),
+
+    // Se está ativo ou não
+    isActive: boolean('is_active').default(true).notNull(),
+
+    // Contadores (atualizados via triggers ou na aplicação)
+    totalClicks: integer('total_clicks').default(0).notNull(),
+    totalResponses: integer('total_responses').default(0).notNull(),
+    totalCompleted: integer('total_completed').default(0).notNull(),
+    totalLeads: integer('total_leads').default(0).notNull(),
+});
+
 export const surveyResponses = pgTable('survey_responses', {
     // --- Identificação Básica ---
     id: uuid('id').defaultRandom().primaryKey(),
@@ -74,4 +99,65 @@ export const surveyResponses = pgTable('survey_responses', {
     // Ex: { "q1": 2.5, "q2": 5.1, "pitch_view_time": 10.0 }
     // Isso ajuda a ver onde as pessoas travam ou se leem o pitch rápido demais.
     stepTimings: jsonb('step_timings'),
+
+    // Adicionar referência ao visitante
+    visitorId: varchar('visitor_id', { length: 100 }),
+});
+
+// Tabela de Visitas (registra TODOS que entraram no site, mesmo sem responder)
+export const siteVisits = pgTable('site_visits', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+
+    // Identificador único do visitante (gerado no client e salvo no localStorage)
+    visitorId: varchar('visitor_id', { length: 100 }),
+
+    // Se converteu em resposta
+    convertedToResponse: boolean('converted_to_response').default(false),
+    responseId: uuid('response_id'), // FK para surveyResponses se converteu
+
+    // --- Rastreamento de Marketing (UTMs) ---
+    utmSource: text('utm_source'),
+    utmMedium: text('utm_medium'),
+    utmCampaign: text('utm_campaign'),
+    utmTerm: text('utm_term'),
+    utmContent: text('utm_content'),
+    referrer: text('referrer'),
+
+    // --- Metadados Técnicos ---
+    deviceType: text('device_type'),
+    browser: text('browser'),
+    browserVersion: text('browser_version'),
+    os: text('os'),
+    osVersion: text('os_version'),
+
+    // --- Tela e Dispositivo ---
+    screenWidth: integer('screen_width'),
+    screenHeight: integer('screen_height'),
+    viewportWidth: integer('viewport_width'),
+    viewportHeight: integer('viewport_height'),
+    devicePixelRatio: integer('device_pixel_ratio'),
+    touchSupport: boolean('touch_support'),
+
+    // --- GeoIP & Network ---
+    ipAddress: text('ip_address'),
+    country: text('country'),
+    city: text('city'),
+    region: text('region'),
+    timezone: text('timezone'),
+    isp: text('isp'),
+
+    // --- Comportamento na Página ---
+    landingPage: text('landing_page'),
+    exitPage: text('exit_page'),
+    pageViews: integer('page_views').default(1),
+    timeOnSiteSeconds: integer('time_on_site_seconds'),
+    scrollDepthPercent: integer('scroll_depth_percent'),
+    
+    // --- Engajamento ---
+    clickedStart: boolean('clicked_start').default(false),
+    lastSeenStep: varchar('last_seen_step', { length: 50 }),
+
+    // --- Metadados extras em JSON ---
+    metadata: jsonb('metadata'),
 });
