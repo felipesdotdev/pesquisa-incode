@@ -138,7 +138,7 @@ export function getConfirmationEmailHTML(userName?: string, referralLink?: strin
                           <div style="width: 8px; height: 8px; background-color: #a78bfa; border-radius: 50%; margin-top: 6px;"></div>
                         </td>
                         <td>
-                          <p style="margin: 0 0 4px 0; color: #ffffff; font-weight: 600; font-size: 15px;">Beta: Dezembro 2025</p>
+                          <p style="margin: 0 0 4px 0; color: #ffffff; font-weight: 600; font-size: 15px;">Beta: Janeiro 2026</p>
                           <p style="margin: 0; color: #71717A; font-size: 13px;">Você receberá o token de acesso prioritário.</p>
                         </td>
                       </tr>
@@ -253,7 +253,7 @@ export function getConfirmationEmailHTML(userName?: string, referralLink?: strin
                 <tr>
                   <td>
                     <p style="margin: 0; font-family: sans-serif; font-size: 12px; color: #3F3F46; line-height: 1.5;">
-                      &copy; ${currentYear} Incode Automation. São Paulo, Brasil.<br>
+                      &copy; ${currentYear} useincode.app. Piracicaba, São Paulo, Brasil.<br>
                       <span style="opacity: 0.5;">Seus dados estão protegidos pela LGPD</span>
                     </p>
                   </td>

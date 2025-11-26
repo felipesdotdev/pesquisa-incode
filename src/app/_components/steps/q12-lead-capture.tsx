@@ -86,7 +86,7 @@ export function Q12LeadCapture({ onNext, surveyId }: Q12Props) {
             <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-900" />
           </div>
           <h2 className="text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
-            O beta está previsto para Dezembro de 2025.
+            O beta está previsto para Janeiro de 2026.
           </h2>
           <p className="text-base md:text-lg text-gray-600">
             Onde devemos te avisar?
@@ -112,7 +112,7 @@ export function Q12LeadCapture({ onNext, surveyId }: Q12Props) {
                   Quero participar do Beta! 🚀
                 </span>
                 <span className="text-sm md:text-base text-gray-600">
-                  Receba acesso prioritário quando lançarmos em dezembro
+                  Receba acesso prioritário quando lançarmos em Janeiro de 2026
                 </span>
               </div>
             </label>

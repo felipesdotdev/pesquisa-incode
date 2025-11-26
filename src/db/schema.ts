@@ -94,6 +94,7 @@ export const surveyResponses = pgTable('survey_responses', {
 
     // Analytics de Performance
     totalDurationSeconds: integer('total_duration_seconds'), // Quanto tempo levou no total
+    completedAt: timestamp('completed_at'), // Quando a pesquisa foi completada
 
     // JSON para guardar tempos individuais por pergunta. 
     // Ex: { "q1": 2.5, "q2": 5.1, "pitch_view_time": 10.0 }

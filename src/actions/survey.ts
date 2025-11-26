@@ -193,7 +193,7 @@ export async function completeSurvey(
           .limit(1);
 
         const utmSource = response[0]?.utmSource;
-        let referralLink = null;
+        let referralLink: string | undefined = undefined;
 
         // Criar link de referral automático se veio de utm_source
         if (utmSource && utmSource !== "direct") {
@@ -209,7 +209,6 @@ export async function completeSurvey(
               name: `Auto: ${utmSource}`,
               slug: utmSource,
               description: "Criado automaticamente",
-              isActive: true,
             });
           }
 

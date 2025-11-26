@@ -326,7 +326,7 @@ export function SurveyManager() {
       y: 0,
       transition: {
         duration: 0.5,
-        ease: [0.25, 0.1, 0.25, 1], // Easing suave tipo Apple
+        ease: [0.25, 0.1, 0.25, 1] as const, // Easing suave tipo Apple
       },
     },
     exit: {
@@ -334,7 +334,7 @@ export function SurveyManager() {
       y: -50,
       transition: {
         duration: 0.3,
-        ease: [0.25, 0.1, 0.25, 1],
+        ease: [0.25, 0.1, 0.25, 1] as const,
       },
     },
   };
@@ -549,7 +549,7 @@ export function SurveyManager() {
             animate="animate"
             exit="exit"
           >
-            <ThankYou completedAt={completedAt} />
+            <ThankYou />
           </motion.div>
         )}
 
