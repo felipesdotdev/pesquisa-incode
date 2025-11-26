@@ -317,9 +317,15 @@ export async function getResponseById(id: string) {
 // === Reference Sources (Links de Referência) ===
 
 export async function getReferenceSources() {
-    return await db.select()
-        .from(referenceSources)
-        .orderBy(desc(referenceSources.createdAt));
+    try {
+        const result = await db.select()
+            .from(referenceSources)
+            .orderBy(desc(referenceSources.createdAt));
+        return result;
+    } catch (error) {
+        console.error('❌ Erro ao buscar reference_sources:', error);
+        return [];
+    }
 }
 
 export async function getReferenceSourceById(id: string) {
