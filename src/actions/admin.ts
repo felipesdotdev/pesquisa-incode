@@ -244,6 +244,26 @@ export async function getDashboardData(filters?: DashboardFilters) {
         }))
         .sort((a, b) => b.value - a.value);
 
+    // Valor Percebido
+    const perceivedValueData = await db
+        .select({
+            name: surveyResponses.perceivedValue,
+            value: sql<number>`cast(count(*) as int)`,
+        })
+        .from(surveyResponses)
+        .where(whereClause)
+        .groupBy(surveyResponses.perceivedValue);
+
+    // Disposição a Pagar
+    const willingnessToPayData = await db
+        .select({
+            name: surveyResponses.willingnessToPay,
+            value: sql<number>`cast(count(*) as int)`,
+        })
+        .from(surveyResponses)
+        .where(whereClause)
+        .groupBy(surveyResponses.willingnessToPay);
+
     return {
         stats: {
             total: totalResponses[0].count,
@@ -267,7 +287,9 @@ export async function getDashboardData(filters?: DashboardFilters) {
             operatingSystems,
             funnelData,
             responsesPerDay,
-            avgStepTimings
+            avgStepTimings,
+            perceivedValue: perceivedValueData,
+            willingnessToPay: willingnessToPayData
         }
     };
 }

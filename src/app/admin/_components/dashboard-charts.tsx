@@ -177,6 +177,52 @@ export function DashboardCharts({ data }: { data: any }) {
                         </ResponsiveContainer>
                     </div>
                 </div>
+
+                {/* Valor Percebido */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Valor Percebido</h3>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={data.perceivedValue || []}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={false}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                    label={({ name, percent }: any) => `${translate('perceivedValue', name)}: ${(percent * 100).toFixed(0)}%`}
+                                >
+                                    {(data.perceivedValue || []).map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip content={<CustomTooltip category="perceivedValue" />} />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Disposição a Pagar */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Disposição a Pagar</h3>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data.willingnessToPay || []}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis
+                                    dataKey="name"
+                                    tick={{ fontSize: 12 }}
+                                />
+                                <YAxis />
+                                <Tooltip content={<CustomTooltip category="willingnessToPay" />} />
+                                <Bar dataKey="value" fill="#82ca9d" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -246,7 +246,7 @@ export function DashboardClient({ data, responses, filterOptions, currentFilters
             </div>
 
             {/* Response Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6">
                 {/* Total Respostas */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
@@ -287,6 +287,45 @@ export function DashboardClient({ data, responses, filterOptions, currentFilters
                     <p className="text-sm font-medium text-gray-500 mb-1">Leads Capturados</p>
                     <p className="text-3xl font-bold text-gray-900">{stats.leads}</p>
                     <p className="text-xs text-gray-400 mt-1">De respostas completas</p>
+                </div>
+
+                {/* Ticket Médio */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-green-50 rounded-xl">
+                      <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-medium text-green-600">Pricing</span>
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {(() => {
+                      const lowCount = (data.charts.willingnessToPay || []).find((d: any) => d.name === 'low')?.value || 0;
+                      const mediumCount = (data.charts.willingnessToPay || []).find((d: any) => d.name === 'medium')?.value || 0;
+                      const highCount = (data.charts.willingnessToPay || []).find((d: any) => d.name === 'high')?.value || 0;
+
+                      const total = lowCount + mediumCount + highCount;
+                      if (total === 0) return '-';
+
+                      // Valores médios de cada categoria
+                      const avgTicket = (lowCount * 50 + mediumCount * 100 + highCount * 200) / total;
+                      return `R$ ${avgTicket.toFixed(0)}`;
+                    })()}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Ticket médio estimado</p>
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">Valor Percebido</span>
+                      <span className="font-medium text-gray-700">
+                        {(() => {
+                          const highValue = (data.charts.perceivedValue || []).find((d: any) => d.name === 'high')?.value || 0;
+                          const total = (data.charts.perceivedValue || []).reduce((sum: number, d: any) => sum + d.value, 0);
+                          return total > 0 ? `${((highValue / total) * 100).toFixed(0)}% Alto` : '-';
+                        })()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Funil Completo */}
